@@ -7,14 +7,27 @@
 //
 
 import UIKit
-
-class MainViewController: UIViewController {
-
+import Soundcloud
+class MainViewController: UIViewController,UITableViewDataSource,UITableViewDelegate {
+    
+    @IBOutlet weak var songTable: UITableView!
+    
+    @IBOutlet weak var imagView: UIImageView!
+    var user:User?
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         
-        self.view.backgroundColor = UIColor.orangeColor()
-        // Do any additional setup after loading the view.
+        imagView.backgroundColor = UIColor.clearColor()
+        imagView.layer.cornerRadius = self.imagView.frame.height / 2
+        imagView.layer.masksToBounds = true
+       songTable.delegate = self
+        songTable.dataSource = self
+        
+       
+    }
+    func getTracks(){
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -22,15 +35,17 @@ class MainViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10
     }
-    */
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cellIdentifier = "songCells"
+        
+        let cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier)!
+        cell.backgroundColor = UIColor.grayColor().colorWithAlphaComponent(0.5)
+        return cell
+        
+    }
+   
 
 }

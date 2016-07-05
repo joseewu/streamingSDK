@@ -8,10 +8,18 @@
 
 import UIKit
 import Soundcloud
-class ViewController: UIViewController {
+import AVFoundation
+class ViewController: UIViewController,AVAudioPlayerDelegate {
 
+    @IBOutlet weak var LoginBut: UIButton!
     
     var user:User?
+    var userFavoriteTrack:[Track]?{
+        didSet{
+            startPlayTracks(userFavoriteTrack)
+        }
+    }
+    var play:AVAudioPlayer!
    // private let appDelegate = AppDelegate()
     
     override func viewDidLoad() {
@@ -24,34 +32,61 @@ class ViewController: UIViewController {
         
     }
 
-    
+    func startPlayTracks(tracksname:[Track]?){
+        
+        let trackUrl = tracksname?.first?.streamURL
+        play = try? AVAudioPlayer(data: NSData(contentsOfURL: trackUrl!)!)
+        play.delegate = self
+        play.prepareToPlay()
+        play.play()
+        
+        
+    }
     @IBAction func LogIn(sender: UIButton) {
-         let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        Session.login(self, completion: { result -> Void in
-                        if (result.response.isSuccessful){
-                            
-                        
-                            self.getUser()
-                            dispatch_async(dispatch_get_main_queue()) {
-                                self.dismissViewControllerAnimated(true, completion: nil)
-                                
-                                appDelegate.didLogInSoundCloud()
-                            }
-                            
-                            
-                            
-             }
-        })
-
+       
+        dispatch_async(dispatch_get_main_queue()) {
+            Session.login(self, completion: { [weak self] result -> Void in
+                
+                if (result.response.isSuccessful){
+                    
+                    self?.getUser()
+                }
+                
+                })
+        }
+        self.view.backgroundColor  = UIColor.orangeColor()
+        
+    }
+    func audioPlayerDidFinishPlaying(player: AVAudioPlayer, successfully flag: Bool) {
+        play.stop()
+        self.userFavoriteTrack?.removeFirst()
+        startPlayTracks(self.userFavoriteTrack)
+        
     }
     func getUser(){
-        Soundcloud.session?.me({ result  in
-            self.user = result.response.result
-            if let user = result.response.result {
-                print(user)
+        
+        
+        Soundcloud.session?.me({[weak self] result  in
+            if (result.response.isSuccessful){
+                
+            self?.user = result.response.result
+                self?.getTracks()
+            }
+        })
+        
+    }
+    
+    func getTracks(){
+        self.user?.favorites({[weak self] results in
+             if (results.response.isSuccessful){
+                
+            self?.userFavoriteTrack = results.response.result
+                
+            
             }
         })
     }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

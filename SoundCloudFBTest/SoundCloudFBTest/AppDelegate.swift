@@ -28,9 +28,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     func didLogInSoundCloud(){
-        let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
-        let rootView = storyboard.instantiateViewControllerWithIdentifier("MainViewController")
-        self.window?.rootViewController = rootView
+//        let storyboard = UIStoryboard.init(name: "Main", bundle: nil)
+//        let rootView = storyboard.instantiateViewControllerWithIdentifier("MainViewController")
+//        self.window?.rootViewController = rootView
+        
+        
     }
 
     func applicationWillResignActive(application: UIApplication) {
